@@ -91,6 +91,17 @@ def create_user():
     return jsonify({'user': user}), 201
 
 
+@app.route('/'.join((BASE_URI, 'users', '<username>')),
+           methods=['DELETE'])
+def delete_user(username):
+    if username not in users:
+        abort(404)
+    else:
+        del users[username]
+
+    return jsonify({'result': True})
+
+
 # Groups Resource
 
 
