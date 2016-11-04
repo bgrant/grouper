@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, abort
 
 
 app = Flask(__name__)
@@ -53,7 +53,10 @@ def get_users():
 @app.route('/'.join((BASE_URI, 'users', '<username>')),
            methods=['GET'])
 def get_user(username):
-    return jsonify({'user': users[username]})
+    try:
+        return jsonify({'user': users[username]})
+    except KeyError:
+        abort(404)
 
 
 @app.route('/'.join((BASE_URI, 'groups')),
@@ -65,7 +68,10 @@ def get_groups():
 @app.route('/'.join((BASE_URI, 'groups', '<groupname>')),
            methods=['GET'])
 def get_group(groupname):
-    return jsonify({'group': groups[groupname]})
+    try:
+        return jsonify({'group': groups[groupname]})
+    except KeyError:
+        abort(404)
 
 
 if __name__ == '__main__':
