@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort, make_response
+from flask import Flask, jsonify, abort, make_response, request
 
 
 app = Flask(__name__)
@@ -71,6 +71,24 @@ def get_user(username):
         return jsonify({'user': users[username]})
     except KeyError:
         abort(404)
+
+
+@app.route('/'.join((BASE_URI, 'users')),
+           methods=['POST'])
+def create_user():
+    if not request.json:
+        abort(400)
+    user = dict()
+
+    user['username'] = request.json.get('username')
+    user['email'] = request.json.get('email')
+    user['groups'] = []
+
+    if not all((user['username'], user['email'])):
+        abort(400)
+
+    users['username'] = user
+    return jsonify({'user': user}), 201
 
 
 # Groups Resource
