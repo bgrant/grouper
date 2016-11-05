@@ -16,7 +16,7 @@ members.  
 
 ## REST API
 
-Base URI:  http://[hostname]/grouper/api/v1.0
+Base URI: https://still-anchorage-41233.herokuapp.com/grouper/api/v1.0
 
 ### `users` resource
 
