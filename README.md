@@ -25,7 +25,7 @@ Base URI:  http://[hostname]/grouper/api/v1.0
 GET      | [BASE]/users             | Retrieve list of users
 GET      | [BASE]/users/[username]  | Retrieve a user
 POST     | [BASE]/users             | Create a new user
-PUT      | [BASE]/users/[username]  | Update an existing user
+PUT      | [BASE]/users/[username]  | Update an existing user('s email address)
 DELETE   | [BASE]/users/[username]  | Delete a user
 
 A `user` has the following fields:
