@@ -102,6 +102,19 @@ def delete_user(username):
     return jsonify({'result': True})
 
 
+@app.route('/'.join((BASE_URI, 'users', '<username>')),
+           methods=['PUT'])
+def update_email(username):
+    if username not in users:
+        abort(404)
+    if not request.json:
+        abort(400)
+
+    users[username]['email'] = request.json['email']
+
+    return jsonify({'user': users[username]})
+
+
 # Groups Resource
 
 
