@@ -102,7 +102,7 @@ def delete_user(username):
 
 @app.route('/'.join((BASE_URI, 'users', '<username>')),
            methods=['PUT'])
-def update_email(username):
+def update_user(username):
     if username not in users:
         abort(404)
     if not request.json:
@@ -154,6 +154,19 @@ def delete_group(groupname):
     if groupname not in groups:
         abort(404)
     del groups[groupname]
+    return jsonify({'result': True})
+
+
+@app.route('/'.join((BASE_URI, 'groups', '<groupname>')),
+           methods=['PUT'])
+def update_group(groupname):
+    if groupname not in groups:
+        abort(404)
+    if not request.json:
+        abort(400)
+
+    groups[groupname]['users'] = request.json['users']
+
     return jsonify({'result': True})
 
 
