@@ -133,5 +133,22 @@ def get_group(groupname):
         abort(404)
 
 
+@app.route('/'.join((BASE_URI, 'groups')),
+           methods=['POST'])
+def create_group():
+    if not request.json:
+        abort(400)
+    group = dict()
+
+    group['groupname'] = request.json.get('groupname')
+    group['users'] = request.json.get('users')
+
+    if not group['groupname']:
+        abort(400)
+
+    groups['groupname'] = group
+    return jsonify({'group': group}), 201
+
+
 if __name__ == '__main__':
     app.run(debug=True)
