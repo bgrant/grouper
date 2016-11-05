@@ -96,9 +96,7 @@ def create_user():
 def delete_user(username):
     if username not in users:
         abort(404)
-    else:
-        del users[username]
-
+    del users[username]
     return jsonify({'result': True})
 
 
@@ -148,6 +146,15 @@ def create_group():
 
     groups['groupname'] = group
     return jsonify({'group': group}), 201
+
+
+@app.route('/'.join((BASE_URI, 'groups', '<groupname>')),
+           methods=['DELETE'])
+def delete_group(groupname):
+    if groupname not in groups:
+        abort(404)
+    del groups[groupname]
+    return jsonify({'result': True})
 
 
 if __name__ == '__main__':
