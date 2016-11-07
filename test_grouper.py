@@ -58,12 +58,15 @@ def test_get_users():
     assert list(r.json().keys())[0] == 'users'
 
 
-def test_add_delete_user():
+def test_add_update_delete_user():
     username = random_name()
     email = random_email()
     data = dict(username=username,
                 email=email,
                 groups=[])
+    updated_data = dict(username=username,
+                        email='foo@bar.com',
+                        groups=[])
 
     r = requests.post('/'.join((URL, 'users')), json=data)
     assert r.status_code == 201
@@ -71,6 +74,14 @@ def test_add_delete_user():
     r = requests.get('/'.join((URL, 'users', username)))
     assert r.status_code == 200
     assert r.json() == {'user': data}
+
+    r = requests.put('/'.join((URL, 'users', username)),
+                     json=dict(email='foo@bar.com'))
+    assert r.status_code == 200
+
+    r = requests.get('/'.join((URL, 'users', username)))
+    assert r.status_code == 200
+    assert r.json() == {'user': updated_data}
 
     r = requests.delete('/'.join((URL, 'users', username)))
     assert r.status_code == 200
@@ -85,10 +96,13 @@ def test_get_groups():
     assert list(r.json().keys())[0] == 'groups'
 
 
-def test_add_delete_group():
+def test_add_update_delete_group():
     groupname = random_name('group')
     data = dict(groupname=groupname,
                 users=[])
+    updated_data = dict(groupname=groupname,
+                        users=['foo', 'bar'])
+
 
     r = requests.post('/'.join((URL, 'groups')), json=data)
     assert r.status_code == 201
@@ -96,6 +110,14 @@ def test_add_delete_group():
     r = requests.get('/'.join((URL, 'groups', groupname)))
     assert r.status_code == 200
     assert r.json() == {'group': data}
+
+    r = requests.put('/'.join((URL, 'groups', groupname)),
+                     json=dict(users=['foo', 'bar']))
+    assert r.status_code == 200
+
+    r = requests.get('/'.join((URL, 'groups', groupname)))
+    assert r.status_code == 200
+    assert r.json() == {'group': updated_data}
 
     r = requests.delete('/'.join((URL, 'groups', groupname)))
     assert r.status_code == 200
