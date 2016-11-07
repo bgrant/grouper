@@ -3,7 +3,7 @@ from flask import Flask, jsonify, abort, make_response, request
 
 app = Flask(__name__)
 
-BASE_URI = '/grouper/api/v1.0'
+BASE_URI = '/grouper/api/v1'
 
 
 # Initial Data
