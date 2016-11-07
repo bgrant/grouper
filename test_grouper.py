@@ -126,3 +126,7 @@ def test_add_update_delete_group():
     assert r.status_code == 404
 
 
+def test_error():
+    r = requests.get('/'.join((URL, 'asdfasdf')))
+    assert r.status_code == 404
+    assert r.json() == dict(error="Not found")
