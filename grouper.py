@@ -3,48 +3,13 @@ from flask import Flask, jsonify, abort, make_response, request
 
 app = Flask(__name__)
 
-BASE_URI = '/grouper/api/v1'
+API_URL = '/grouper/api/v1'
 
 
 # Initial Data
 
-
-users = {
-    'alice':
-        {'username': 'alice',
-         'email': 'alice@q.bio',
-         'groups': ['wheel', 'developers'],
-         },
-    'bob':
-        {'username': 'bob',
-         'email': 'bob@q.bio',
-         'groups': ['developers'],
-         },
-    'charlie':
-        {'username': 'charlie',
-         'email': 'charlie@q.bio',
-         'groups': ['marketing'],
-         },
-    }
-
-groups = {
-    'wheel':
-        {'groupname': 'wheel',
-         'users': ['alice'],
-         },
-    'developers':
-        {'groupname': 'developers',
-         'users': ['alice', 'bob'],
-         },
-    'marketing':
-        {'groupname': 'marketing',
-         'users': ['charlie'],
-         },
-    'www':
-        {'groupname': 'www',
-         'users': [],
-         },
-    }
+users = {}
+groups = {}
 
 
 # Utilities
@@ -58,13 +23,13 @@ def not_found(error):
 # Users Resource
 
 
-@app.route('/'.join((BASE_URI, 'users')),
+@app.route('/'.join((API_URL, 'users')),
            methods=['GET'])
 def get_users():
     return jsonify({'users': list(users.values())})
 
 
-@app.route('/'.join((BASE_URI, 'users', '<username>')),
+@app.route('/'.join((API_URL, 'users', '<username>')),
            methods=['GET'])
 def get_user(username):
     try:
@@ -73,7 +38,7 @@ def get_user(username):
         abort(404)
 
 
-@app.route('/'.join((BASE_URI, 'users')),
+@app.route('/'.join((API_URL, 'users')),
            methods=['POST'])
 def create_user():
     if not request.json:
@@ -87,11 +52,11 @@ def create_user():
     if not all((user['username'], user['email'])):
         abort(400)
 
-    users['username'] = user
+    users[user['username']] = user
     return jsonify({'user': user}), 201
 
 
-@app.route('/'.join((BASE_URI, 'users', '<username>')),
+@app.route('/'.join((API_URL, 'users', '<username>')),
            methods=['DELETE'])
 def delete_user(username):
     if username not in users:
@@ -100,7 +65,7 @@ def delete_user(username):
     return jsonify({'result': True})
 
 
-@app.route('/'.join((BASE_URI, 'users', '<username>')),
+@app.route('/'.join((API_URL, 'users', '<username>')),
            methods=['PUT'])
 def update_user(username):
     if username not in users:
@@ -116,13 +81,13 @@ def update_user(username):
 # Groups Resource
 
 
-@app.route('/'.join((BASE_URI, 'groups')),
+@app.route('/'.join((API_URL, 'groups')),
            methods=['GET'])
 def get_groups():
     return jsonify({'groups': list(groups.values())})
 
 
-@app.route('/'.join((BASE_URI, 'groups', '<groupname>')),
+@app.route('/'.join((API_URL, 'groups', '<groupname>')),
            methods=['GET'])
 def get_group(groupname):
     try:
@@ -131,7 +96,7 @@ def get_group(groupname):
         abort(404)
 
 
-@app.route('/'.join((BASE_URI, 'groups')),
+@app.route('/'.join((API_URL, 'groups')),
            methods=['POST'])
 def create_group():
     if not request.json:
@@ -144,11 +109,11 @@ def create_group():
     if not group['groupname']:
         abort(400)
 
-    groups['groupname'] = group
+    groups[group['groupname']] = group
     return jsonify({'group': group}), 201
 
 
-@app.route('/'.join((BASE_URI, 'groups', '<groupname>')),
+@app.route('/'.join((API_URL, 'groups', '<groupname>')),
            methods=['DELETE'])
 def delete_group(groupname):
     if groupname not in groups:
@@ -157,7 +122,7 @@ def delete_group(groupname):
     return jsonify({'result': True})
 
 
-@app.route('/'.join((BASE_URI, 'groups', '<groupname>')),
+@app.route('/'.join((API_URL, 'groups', '<groupname>')),
            methods=['PUT'])
 def update_group(groupname):
     if groupname not in groups:
