@@ -1,9 +1,12 @@
-from flask import Flask, jsonify, abort, make_response, request
+from flask import Flask, abort, request
+from flask_restful import Api, Resource
+
+
+API_URL = '/grouper/api/v1'
 
 
 app = Flask(__name__)
-
-API_URL = '/grouper/api/v1'
+api = Api(app)
 
 
 # Initial Data
@@ -12,127 +15,121 @@ users = {}
 groups = {}
 
 
-# Utilities
-
-
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
-
-
 # Users Resource
 
 
-@app.route('/'.join((API_URL, 'users')),
-           methods=['GET'])
-def get_users():
-    return jsonify({'users': list(users.values())})
+class UserListAPI(Resource):
+
+    def get(self):
+        return {'users': list(users.values())}
+
+    def post(self):
+        if not request.json:
+            abort(400)
+        user = dict()
+
+        user['username'] = request.json.get('username')
+        user['email'] = request.json.get('email')
+        user['groups'] = []
+
+        if not all((user['username'], user['email'])):
+            abort(400)
+
+        users[user['username']] = user
+        return {'user': user}, 201
 
 
-@app.route('/'.join((API_URL, 'users', '<username>')),
-           methods=['GET'])
-def get_user(username):
-    try:
-        return jsonify({'user': users[username]})
-    except KeyError:
-        abort(404)
+api.add_resource(UserListAPI,
+                 '/'.join((API_URL, 'users')),
+                 endpoint = 'users')
 
 
-@app.route('/'.join((API_URL, 'users')),
-           methods=['POST'])
-def create_user():
-    if not request.json:
-        abort(400)
-    user = dict()
+class UserAPI(Resource):
 
-    user['username'] = request.json.get('username')
-    user['email'] = request.json.get('email')
-    user['groups'] = []
+    def get(self, username):
+        try:
+            return {'user': users[username]}
+        except KeyError:
+            abort(404)
 
-    if not all((user['username'], user['email'])):
-        abort(400)
+    def put(self, username):
+        if username not in users:
+            abort(404)
+        if not request.json:
+            abort(400)
 
-    users[user['username']] = user
-    return jsonify({'user': user}), 201
+        users[username]['email'] = request.json['email']
 
+        return {'user': users[username]}
 
-@app.route('/'.join((API_URL, 'users', '<username>')),
-           methods=['DELETE'])
-def delete_user(username):
-    if username not in users:
-        abort(404)
-    del users[username]
-    return jsonify({'result': True})
+    def delete(self, username):
+        if username not in users:
+            abort(404)
+        del users[username]
+        return {'result': True}
 
 
-@app.route('/'.join((API_URL, 'users', '<username>')),
-           methods=['PUT'])
-def update_user(username):
-    if username not in users:
-        abort(404)
-    if not request.json:
-        abort(400)
-
-    users[username]['email'] = request.json['email']
-
-    return jsonify({'user': users[username]})
+api.add_resource(UserAPI,
+                 '/'.join((API_URL, 'users', '<username>')),
+                 endpoint = 'username')
 
 
 # Groups Resource
 
 
-@app.route('/'.join((API_URL, 'groups')),
-           methods=['GET'])
-def get_groups():
-    return jsonify({'groups': list(groups.values())})
+class GroupListAPI(Resource):
+
+    def get(self):
+        return {'groups': list(groups.values())}
+
+    def post(self):
+        if not request.json:
+            abort(400)
+        group = dict()
+
+        group['groupname'] = request.json.get('groupname')
+        group['users'] = request.json.get('users')
+
+        if not group['groupname']:
+            abort(400)
+
+        groups[group['groupname']] = group
+        return {'group': group}, 201
 
 
-@app.route('/'.join((API_URL, 'groups', '<groupname>')),
-           methods=['GET'])
-def get_group(groupname):
-    try:
-        return jsonify({'group': groups[groupname]})
-    except KeyError:
-        abort(404)
+api.add_resource(GroupListAPI,
+                 '/'.join((API_URL, 'groups')),
+                 endpoint = 'groups')
 
 
-@app.route('/'.join((API_URL, 'groups')),
-           methods=['POST'])
-def create_group():
-    if not request.json:
-        abort(400)
-    group = dict()
+class GroupAPI(Resource):
 
-    group['groupname'] = request.json.get('groupname')
-    group['users'] = request.json.get('users')
+    def get(self, groupname):
+        try:
+            return {'group': groups[groupname]}
+        except KeyError:
+            abort(404)
 
-    if not group['groupname']:
-        abort(400)
+    def delete(self, groupname):
+        if groupname not in groups:
+            abort(404)
+        del groups[groupname]
+        return {'result': True}
 
-    groups[group['groupname']] = group
-    return jsonify({'group': group}), 201
+    def put(self, groupname):
+        if groupname not in groups:
+            abort(404)
+        if not request.json:
+            abort(400)
+
+        groups[groupname]['users'] = request.json['users']
+
+        return {'result': True}
 
 
-@app.route('/'.join((API_URL, 'groups', '<groupname>')),
-           methods=['DELETE'])
-def delete_group(groupname):
-    if groupname not in groups:
-        abort(404)
-    del groups[groupname]
-    return jsonify({'result': True})
-
-
-@app.route('/'.join((API_URL, 'groups', '<groupname>')),
-           methods=['PUT'])
-def update_group(groupname):
-    if groupname not in groups:
-        abort(404)
-    if not request.json:
-        abort(400)
-
-    groups[groupname]['users'] = request.json['users']
-
-    return jsonify({'result': True})
+api.add_resource(GroupAPI,
+                 '/'.join((API_URL, 'groups', '<groupname>')),
+                 endpoint = 'groupname')
 
 
 if __name__ == '__main__':
