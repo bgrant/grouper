@@ -41,7 +41,7 @@ class UserListAPI(Resource):
 
 api.add_resource(UserListAPI,
                  '/'.join((API_URL, 'users')),
-                 endpoint = 'users')
+                 endpoint='users')
 
 
 class UserAPI(Resource):
@@ -70,8 +70,8 @@ class UserAPI(Resource):
 
 
 api.add_resource(UserAPI,
-                 '/'.join((API_URL, 'users', '<username>')),
-                 endpoint = 'username')
+                 '/'.join((API_URL, 'users', '<string:username>')),
+                 endpoint='username')
 
 
 # Groups Resource
@@ -99,7 +99,7 @@ class GroupListAPI(Resource):
 
 api.add_resource(GroupListAPI,
                  '/'.join((API_URL, 'groups')),
-                 endpoint = 'groups')
+                 endpoint='groups')
 
 
 class GroupAPI(Resource):
@@ -128,8 +128,8 @@ class GroupAPI(Resource):
 
 
 api.add_resource(GroupAPI,
-                 '/'.join((API_URL, 'groups', '<groupname>')),
-                 endpoint = 'groupname')
+                '/'.join((API_URL, 'groups', '<string:groupname>')),
+                 endpoint='groupname')
 
 
 if __name__ == '__main__':
