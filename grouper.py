@@ -1,11 +1,13 @@
 from flask import Flask, abort, request
 from flask_restful import Api, Resource
+from flask_script import Manager
 
 
 API_URL = '/grouper/api/v1'
 
 
 app = Flask(__name__)
+manager = Manager(app)
 api = Api(app)
 
 
@@ -133,4 +135,4 @@ api.add_resource(GroupAPI,
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    manager.run()
