@@ -46,10 +46,22 @@ class User(db.Model):
                              backref=db.backref('users', lazy='dynamic'),
                              lazy='dynamic')
 
+    def __repr__(self):
+        rep = ("User(id={id!r}, name={name!r}, "
+               "email={email!r}, groups={groups!r})")
+        return rep.format(id=self.id, name=self.name, email=self.email,
+                          groups=[g.id for g in self.groups])
+
+
 class Group(db.Model):
     __tablename__ = 'groups'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+
+    def __repr__(self):
+        rep = "Group(id={id!r}, name={name!r}, users={users!r})"
+        return rep.format(id=self.id, name=self.name,
+                          users=[u.id for u in self.users])
 
 
 # Schemas
