@@ -142,7 +142,7 @@ def add_user():
         return jsonify({'message': "User exists."}), 409
 
     email = data['email']
-    groups = data['groups']
+    groups = data.get('groups', [])
 
     # Create a new User
     user = User(name=name, email=email, groups=groups)
@@ -231,7 +231,7 @@ def add_group():
     if Group.query.filter_by(name=name).count() != 0:
         return jsonify({'message': "Group exists."}), 409
 
-    users = data['users']
+    users = data.get('users', [])
 
     # Create a new Group
     group = Group(name=name, users=users)
