@@ -74,7 +74,7 @@ def must_not_be_blank(data):
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True, validate=must_not_be_blank)
-    email = fields.Str(required=True, validate=must_not_be_blank)
+    email = fields.Email(required=True)
     groups = fields.Nested('GroupSchema', many=True, only='id')
 
 
