@@ -1,5 +1,5 @@
 """
-Grouper is a Python web service for manages users and groups.
+Grouper is a Python web service for managing users and groups.
 
 It exposes a JSON/REST API and stores the user and group info in a database.
 See README.md for more details.
