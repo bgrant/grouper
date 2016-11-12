@@ -50,7 +50,7 @@ class User(db.Model):
         rep = ("User(id={id!r}, name={name!r}, "
                "email={email!r}, groups={groups!r})")
         return rep.format(id=self.id, name=self.name, email=self.email,
-                          groups=[g.id for g in self.groups])
+                          groups=[g.name for g in self.groups])
 
 
 class Group(db.Model):
@@ -61,7 +61,7 @@ class Group(db.Model):
     def __repr__(self):
         rep = "Group(id={id!r}, name={name!r}, users={users!r})"
         return rep.format(id=self.id, name=self.name,
-                          users=[u.id for u in self.users])
+                          users=[u.name for u in self.users])
 
 
 # Schemas
