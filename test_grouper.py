@@ -272,6 +272,47 @@ def test_empty_add_group():
     assert r.status_code == 400
 
 
+def test_bad_user_name():
+    r = requests.post('/'.join((URL, 'users')),
+                      json=dict(name=99, email=random_email()))
+    assert r.status_code == 422
+
+
+def test_bad_user_email():
+    r = requests.post('/'.join((URL, 'users')),
+                      json=dict(name=random_name(), email=99))
+    assert r.status_code == 422
+
+
+def test_bad_user_groups_string():
+    r = requests.post('/'.join((URL, 'users')),
+                      json=dict(name=random_name(),
+                                email=random_email(),
+                                groups='what'))
+    assert r.status_code == 422
+
+
+def test_bad_user_groups_dont_exist():
+    r = requests.post('/'.join((URL, 'users')),
+                      json=dict(name=random_name(),
+                                email=random_email(),
+                                groups=[9999999999999999]))
+    assert r.status_code == 422
+
+
+def test_bad_group_name():
+    r = requests.post('/'.join((URL, 'groups')),
+                      json=dict(name=99))
+    assert r.status_code == 422
+
+
+def test_bad_group_users():
+    r = requests.post('/'.join((URL, 'groups')),
+                      json=dict(name=random_name(),
+                                users=[99999999999]))
+    assert r.status_code == 422
+
+
 def test_double_add_user():
     user0 = dict(name=random_name(),
                  email=random_email(),
