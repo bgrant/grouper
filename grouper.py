@@ -74,19 +74,41 @@ def must_not_be_blank(data):
         raise ValidationError('Data not provided.')
 
 
+class UserGroups(fields.Field):
+    def _serialize(self, value, attr, object):
+        return [v.id for v in value]
+
+    def _deserialize(self, value, attr, object):
+        if len(value) > 0:
+            return Group.query.filter(Group.id.in_(value)).all()
+        else:
+            return []
+
+
 class UserSchema(Schema):
     """Schema to validate and (de)serialize Users."""
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True, validate=must_not_be_blank)
     email = fields.Email(required=True)
-    groups = fields.Nested('GroupSchema', many=True, only='id')
+    groups = UserGroups()
+
+
+class GroupUsers(fields.Field):
+    def _serialize(self, value, attr, object):
+        return [v.id for v in value]
+
+    def _deserialize(self, value, attr, object):
+        if len(value) > 0:
+            return User.query.filter(User.id.in_(value)).all()
+        else:
+            return []
 
 
 class GroupSchema(Schema):
     """Schema to validate and (de)serialize Groups."""
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True, validate=must_not_be_blank)
-    users = fields.Nested('UserSchema', many=True, only='id')
+    users = GroupUsers()
 
 
 user_schema = UserSchema()
