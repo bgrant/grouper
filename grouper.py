@@ -78,7 +78,7 @@ def must_not_be_blank(data):
 
 
 def validate_id(id_):
-    """Raise validation error if data id_ is outside SQL id range."""
+    """Raise validation error if id_ is outside SQL int range."""
     if id_ < 1 or id_ > SQL_MAXINT:
         raise ValidationError('ID does not exist.')
 
