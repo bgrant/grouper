@@ -255,3 +255,18 @@ def test_double_add_user():
 
     r = requests.delete('/'.join((URL, 'users', str(user0_id))))
     assert r.status_code == 200
+
+
+def test_double_add_group():
+    group0 = dict(name=random_name(),
+                  users=[])
+
+    r = requests.post('/'.join((URL, 'groups')), json=group0)
+    group0_id = r.json()['group']['id']
+    assert r.status_code == 201
+
+    r = requests.post('/'.join((URL, 'groups')), json=group0)
+    assert r.status_code == 409
+
+    r = requests.delete('/'.join((URL, 'groups', str(group0_id))))
+    assert r.status_code == 200
