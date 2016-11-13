@@ -1,7 +1,7 @@
 """
 System tests for grouper, to be run with a test runner like `pytest`.
 
-These tests assume a running server.
+These tests assume a running server at the URL embedded below.
 """
 
 from uuid import uuid4
