@@ -31,7 +31,7 @@ manager = Manager(app)
 SQL_MAXINT = int(2**63 - 1)
 
 
-# Models
+# Database Models
 
 
 user_groups = db.Table('user_groups',
@@ -68,20 +68,24 @@ class Group(db.Model):
                           users=[u.id for u in self.users])
 
 
-# Schemas
+# Marshmallow schemas for (de)serialization and validation
 
 
 def must_not_be_blank(data):
+    """Raise validation error if data is Falsey."""
     if not data:
         raise ValidationError('Data not provided.')
 
 
 def validate_id(id_):
+    """Raise validation error if data id_ is outside SQL id range."""
     if id_ < 1 or id_ > SQL_MAXINT:
         raise ValidationError('ID does not exist.')
 
 
 class UserGroups(fields.Field):
+    """(De)serialization for a user's groups."""
+
     def _serialize(self, value, attr, obj):
         return [v.id for v in value]
 
@@ -101,6 +105,7 @@ class UserSchema(Schema):
 
 
 class GroupUsers(fields.Field):
+    """(De)serialization for a group's users."""
     def _serialize(self, value, attr, obj):
         return [v.id for v in value]
 
@@ -125,7 +130,7 @@ group_schema = GroupSchema()
 groups_schema = GroupSchema(many=True)
 
 
-# API
+# API (Flask views)
 
 
 @app.errorhandler(404)
@@ -133,7 +138,7 @@ def not_found(error):
     return make_response(jsonify({'message': 'Not found'}), 404)
 
 
-## User Resources
+## User Resource
 
 
 @app.route(API_URL + '/users', methods=['GET'])
@@ -238,7 +243,7 @@ def modify_user(user_id):
                     'user': result.data}), 200
 
 
-## Group Resources
+## Group Resource
 
 
 @app.route(API_URL + '/groups', methods=['GET'])
