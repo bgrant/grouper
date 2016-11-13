@@ -39,8 +39,8 @@ user_groups = db.Table('user_groups',
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    email = db.Column(db.String)
+    name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
     groups = db.relationship('Group',
                              secondary=user_groups,
                              backref=db.backref('users', lazy='dynamic'),
@@ -56,7 +56,7 @@ class User(db.Model):
 class Group(db.Model):
     __tablename__ = 'groups'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, nullable=False)
 
     def __repr__(self):
         rep = "Group(id={id!r}, name={name!r}, users={users!r})"
