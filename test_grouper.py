@@ -180,3 +180,22 @@ def test_add_and_delete_users_with_groups():
 
     r = requests.delete('/'.join((URL, 'groups', str(group1_id))))
     assert r.status_code == 200
+
+
+# Test error conditions
+
+
+def test_double_add_user():
+    user0 = dict(name=random_name(),
+                 email=random_email(),
+                 groups=[])
+
+    r = requests.post('/'.join((URL, 'users')), json=user0)
+    user0_id = r.json()['user']['id']
+    assert r.status_code == 201
+
+    r = requests.post('/'.join((URL, 'users')), json=user0)
+    assert r.status_code == 409
+
+    r = requests.delete('/'.join((URL, 'users', str(user0_id))))
+    assert r.status_code == 200
