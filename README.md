@@ -52,6 +52,8 @@ A `user` has the following fields:
 and
 * `id`: integer, assigned automatically (don't provide when creating)
 
+Note: any groups listed in `groups` must already exist when creating a user.
+
 ### `groups` resource
 
  Method  | URI                      | Action
@@ -69,6 +71,8 @@ A `group` has the following fields:
 
 and
 * `id`: integer, assigned automatically (don't provide when creating)
+
+Note: any users listed in `users` must already exist when creating a group.
 
 
 ## Examples
