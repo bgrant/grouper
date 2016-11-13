@@ -26,7 +26,7 @@ You can then use the JSON/REST API from a client of your choice, for example:
     $ curl -i http://localhost:5000/grouper/api/v1/groups
 
 You can also run a set of system tests by running `pytest` in this directory
-after staring the server.
+after starting the server.
 
 
 ## JSON/REST API
