@@ -91,7 +91,10 @@ class UserGroups(fields.Field):
 
     def _deserialize(self, value, attr, obj):
         if len(value) > 0:
-            return Group.query.filter(Group.id.in_(value)).all()
+            result = Group.query.filter(Group.id.in_(value)).all()
+            if len(result) != len(value):
+                raise ValidationError('Not all supplied groups exist')
+            return result
         else:
             return []
 
@@ -111,7 +114,10 @@ class GroupUsers(fields.Field):
 
     def _deserialize(self, value, attr, obj):
         if len(value) > 0:
-            return User.query.filter(User.id.in_(value)).all()
+            result = User.query.filter(User.id.in_(value)).all()
+            if len(result) != len(value):
+                raise ValidationError('Not all supplied users exist')
+            return result
         else:
             return []
 
