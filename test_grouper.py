@@ -241,6 +241,37 @@ def test_modify_user_groups():
 # Test error conditions
 
 
+def test_not_found():
+    r = requests.get('/'.join((URL, 'foo')))
+    assert r.status_code == 404
+
+    # regular non-existence
+
+    r = requests.get('/'.join((URL, 'users', '999')))
+    assert r.status_code == 404
+
+    r = requests.get('/'.join((URL, 'groups', '999')))
+    assert r.status_code == 404
+
+    # larger than SQL integer
+
+    r = requests.get('/'.join((URL, 'users', '999999999999999999999')))
+    assert r.status_code == 404
+
+    r = requests.get('/'.join((URL, 'groups', '999999999999999999999')))
+    assert r.status_code == 404
+
+
+def test_empty_add_user():
+    r = requests.post('/'.join((URL, 'users')))
+    assert r.status_code == 400
+
+
+def test_empty_add_group():
+    r = requests.post('/'.join((URL, 'groups')))
+    assert r.status_code == 400
+
+
 def test_double_add_user():
     user0 = dict(name=random_name(),
                  email=random_email(),

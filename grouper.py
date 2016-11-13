@@ -9,7 +9,7 @@ import os
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager
-from marshmallow import Schema, fields, ValidationError
+from marshmallow import Schema, fields, validate, ValidationError
 
 
 # Config
@@ -27,6 +27,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db = SQLAlchemy(app)
 manager = Manager(app)
+
+SQL_MAXINT = int(2**63 - 1)
 
 
 # Models
@@ -74,6 +76,11 @@ def must_not_be_blank(data):
         raise ValidationError('Data not provided.')
 
 
+def validate_id(id_):
+    if id_ < 1 or id_ > SQL_MAXINT:
+        raise ValidationError('ID does not exist.')
+
+
 class UserGroups(fields.Field):
     def _serialize(self, value, attr, obj):
         return [v.id for v in value]
@@ -87,7 +94,7 @@ class UserGroups(fields.Field):
 
 class UserSchema(Schema):
     """Schema to validate and (de)serialize Users."""
-    id = fields.Int(dump_only=True)
+    id = fields.Int(dump_only=True, validate=validate_id)
     name = fields.Str(required=True, validate=must_not_be_blank)
     email = fields.Email(required=True)
     groups = UserGroups()
@@ -106,7 +113,8 @@ class GroupUsers(fields.Field):
 
 class GroupSchema(Schema):
     """Schema to validate and (de)serialize Groups."""
-    id = fields.Int(dump_only=True)
+    id = fields.Int(dump_only=True,
+                    validate=validate.Range(min=1, max=SQL_MAXINT))
     name = fields.Str(required=True, validate=must_not_be_blank)
     users = GroupUsers()
 
@@ -136,6 +144,11 @@ def get_users():
 
 @app.route(API_URL + '/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
+    try:
+        validate_id(user_id)
+    except ValidationError:
+        return jsonify({"message": "User could not be found."}), 404
+
     user = User.query.get(user_id)
     if user is None:
         return jsonify({"message": "User could not be found."}), 404
@@ -145,6 +158,11 @@ def get_user(user_id):
 
 @app.route(API_URL + '/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
+    try:
+        validate_id(user_id)
+    except ValidationError:
+        return jsonify({"message": "User could not be found."}), 404
+
     user = User.query.get(user_id)
     if user is None:
         return jsonify({"message": "User could not be found."}), 404
@@ -187,6 +205,11 @@ def modify_user(user_id):
     if not json_data:
         return jsonify({'message': "No input data provided."}), 400
 
+    try:
+        validate_id(user_id)
+    except ValidationError:
+        return jsonify({"message": "User could not be found."}), 404
+
     user = User.query.get(user_id)
     if user is None:
         return jsonify({"message": "User could not be found."}), 400
@@ -226,6 +249,11 @@ def get_groups():
 
 @app.route(API_URL + '/groups/<int:group_id>', methods=['GET'])
 def get_group(group_id):
+    try:
+        validate_id(group_id)
+    except ValidationError:
+        return jsonify({"message": "Group could not be found."}), 404
+
     group = Group.query.get(group_id)
     if group is None:
         return jsonify({"message": "Group could not be found."}), 404
@@ -235,6 +263,11 @@ def get_group(group_id):
 
 @app.route(API_URL + '/groups/<int:group_id>', methods=['DELETE'])
 def delete_group(group_id):
+    try:
+        validate_id(group_id)
+    except ValidationError:
+        return jsonify({"message": "Group could not be found."}), 404
+
     group = Group.query.get(group_id)
     if group is None:
         return jsonify({"message": "Group could not be found."}), 404
@@ -275,6 +308,11 @@ def modify_group(group_id):
     json_data = request.get_json()
     if not json_data:
         return jsonify({'message': "No input data provided."}), 400
+
+    try:
+        validate_id(group_id)
+    except ValidationError:
+        return jsonify({"message": "Group could not be found."}), 404
 
     group = Group.query.get(group_id)
     if group is None:
