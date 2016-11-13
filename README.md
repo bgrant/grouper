@@ -1,7 +1,7 @@
 # Grouper
 
-Grouper is a Python web service with a JSON/REST API that manages users and
-groups.
+Grouper is a Flask-based web service with a JSON/REST API that manages users
+and groups.
 
 
 ## Dependencies
@@ -28,7 +28,7 @@ after staring the server.
 
 ## JSON/REST API
 
-Base URI: http://localhost:5000/grouper/api/v1
+Base URI: `http://localhost:5000/grouper/api/v1`
 
 ### `users` resource
 
