@@ -75,10 +75,10 @@ def must_not_be_blank(data):
 
 
 class UserGroups(fields.Field):
-    def _serialize(self, value, attr, object):
+    def _serialize(self, value, attr, obj):
         return [v.id for v in value]
 
-    def _deserialize(self, value, attr, object):
+    def _deserialize(self, value, attr, obj):
         if len(value) > 0:
             return Group.query.filter(Group.id.in_(value)).all()
         else:
@@ -94,10 +94,10 @@ class UserSchema(Schema):
 
 
 class GroupUsers(fields.Field):
-    def _serialize(self, value, attr, object):
+    def _serialize(self, value, attr, obj):
         return [v.id for v in value]
 
-    def _deserialize(self, value, attr, object):
+    def _deserialize(self, value, attr, obj):
         if len(value) > 0:
             return User.query.filter(User.id.in_(value)).all()
         else:
