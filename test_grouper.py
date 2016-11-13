@@ -152,7 +152,7 @@ def test_add_and_delete_users_with_groups():
     assert r.json()['user']['email'] == user1['email']
     assert set(r.json()['user']['groups']) == set(user1['groups'])
 
-    # Delete everything
+    # Delete everything, checking intermediate results
 
     r = requests.delete('/'.join((URL, 'groups', str(group0_id))))
     assert r.status_code == 200
