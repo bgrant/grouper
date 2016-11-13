@@ -182,6 +182,62 @@ def test_add_and_delete_users_with_groups():
     assert r.status_code == 200
 
 
+def test_modify_user_groups():
+
+    # setup
+    group0 = dict(name=random_name())
+    group1 = dict(name=random_name())
+
+    user0 = dict(name=random_name(),
+                 email=random_email(),
+                 groups=[])
+
+    r = requests.post('/'.join((URL, 'users')), json=user0)
+    user0_id = r.json()['user']['id']
+    assert r.status_code == 201
+    assert r.json()['user']['name'] == user0['name']
+    assert r.json()['user']['email'] == user0['email']
+    assert r.json()['user']['groups'] == user0['groups']
+
+    r = requests.post('/'.join((URL, 'groups')), json=group0)
+    assert r.status_code == 201
+    group0_id = r.json()['group']['id']
+
+    r = requests.post('/'.join((URL, 'groups')), json=group1)
+    assert r.status_code == 201
+    group1_id = r.json()['group']['id']
+
+    # change name
+    new_random_name = random_name()
+    r = requests.put('/'.join((URL, 'users', str(user0_id))),
+                     json=dict(name=new_random_name))
+    assert r.status_code == 200
+    assert r.json()['user']['name'] == new_random_name
+
+    # change email
+    new_random_email = random_email()
+    r = requests.put('/'.join((URL, 'users', str(user0_id))),
+                     json=dict(email=new_random_email))
+    assert r.status_code == 200
+    assert r.json()['user']['email'] == new_random_email
+
+    # change groups
+    r = requests.put('/'.join((URL, 'users', str(user0_id))),
+                     json=dict(groups=[group0_id]))
+    assert r.status_code == 200
+    assert set(r.json()['user']['groups']) == {group0_id}
+
+    # change groups
+    r = requests.put('/'.join((URL, 'users', str(user0_id))),
+                     json=dict(groups=[group0_id, group1_id]))
+    assert r.status_code == 200
+    assert set(r.json()['user']['groups']) == {group0_id, group1_id}
+
+    # delete
+    r = requests.delete('/'.join((URL, 'users', str(user0_id))))
+    assert r.status_code == 200
+
+
 # Test error conditions
 
 

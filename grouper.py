@@ -194,7 +194,7 @@ def modify_user(user_id):
     # Validate and deserialize input
     name = json_data.get('name', user.name)
     email = json_data.get('email', user.email)
-    groups = json_data.get('groups', user.groups).all()
+    groups = json_data.get('groups', user.groups.all())
 
     data, errors = user_schema.load(
             dict(name=name, email=email, groups=groups))
@@ -282,7 +282,7 @@ def modify_group(group_id):
 
     # Validate and deserialize input
     name = json_data.get('name', group.name)
-    users = json_data.get('users', group.users).all()
+    users = json_data.get('users', group.users.all())
 
     data, errors = group_schema.load(
             dict(name=name, users=users))
