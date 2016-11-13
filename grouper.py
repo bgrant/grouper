@@ -14,6 +14,7 @@ from marshmallow import Schema, fields, ValidationError
 
 # Config
 
+
 API_URL = '/grouper/api/v1'
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
@@ -29,6 +30,7 @@ manager = Manager(app)
 
 
 # Models
+
 
 user_groups = db.Table('user_groups',
         db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
@@ -50,7 +52,7 @@ class User(db.Model):
         rep = ("User(id={id!r}, name={name!r}, "
                "email={email!r}, groups={groups!r})")
         return rep.format(id=self.id, name=self.name, email=self.email,
-                          groups=[g.name for g in self.groups])
+                          groups=[g.id for g in self.groups])
 
 
 class Group(db.Model):
@@ -61,10 +63,11 @@ class Group(db.Model):
     def __repr__(self):
         rep = "Group(id={id!r}, name={name!r}, users={users!r})"
         return rep.format(id=self.id, name=self.name,
-                          users=[u.name for u in self.users])
+                          users=[u.id for u in self.users])
 
 
 # Schemas
+
 
 def must_not_be_blank(data):
     if not data:
@@ -72,6 +75,7 @@ def must_not_be_blank(data):
 
 
 class UserSchema(Schema):
+    """Schema to validate and (de)serialize Users."""
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True, validate=must_not_be_blank)
     email = fields.Email(required=True)
@@ -79,6 +83,7 @@ class UserSchema(Schema):
 
 
 class GroupSchema(Schema):
+    """Schema to validate and (de)serialize Groups."""
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True, validate=must_not_be_blank)
     users = fields.Nested('UserSchema', many=True, only='id')
