@@ -103,3 +103,80 @@ def test_add_update_delete_group():
 
     r = requests.get('/'.join((URL, 'groups', uid)))
     assert r.status_code == 404
+
+
+def test_add_and_delete_users_with_groups():
+
+    # Create groups
+
+    group0 = dict(name=random_name())
+    group1 = dict(name=random_name())
+
+    r = requests.post('/'.join((URL, 'groups')), json=group0)
+    group0_id = r.json()['group']['id']
+    assert r.status_code == 201
+
+    r = requests.post('/'.join((URL, 'groups')), json=group1)
+    group1_id = r.json()['group']['id']
+    assert r.status_code == 201
+
+    # Create users
+
+    user0 = dict(name=random_name(),
+                 email=random_email(),
+                 groups=[group0_id])
+
+    user1 = dict(name=random_name(),
+                 email=random_email(),
+                 groups=[group0_id, group1_id])
+
+    r = requests.post('/'.join((URL, 'users')), json=user0)
+    user0_id = r.json()['user']['id']
+    assert r.status_code == 201
+
+    r = requests.post('/'.join((URL, 'users')), json=user1)
+    user1_id = r.json()['user']['id']
+    assert r.status_code == 201
+
+    # Check creations
+
+    r = requests.get('/'.join((URL, 'users', str(user0_id))), json=user0)
+    assert r.status_code == 200
+    assert r.json()['user']['name'] == user0['name']
+    assert r.json()['user']['email'] == user0['email']
+    assert set(r.json()['user']['groups']) == set(user0['groups'])
+
+    r = requests.get('/'.join((URL, 'users', str(user1_id))), json=user1)
+    assert r.status_code == 200
+    assert r.json()['user']['name'] == user1['name']
+    assert r.json()['user']['email'] == user1['email']
+    assert set(r.json()['user']['groups']) == set(user1['groups'])
+
+    # Delete everything
+
+    r = requests.delete('/'.join((URL, 'groups', str(group0_id))))
+    assert r.status_code == 200
+
+    r = requests.get('/'.join((URL, 'users', str(user0_id))), json=user0)
+    assert r.status_code == 200
+    assert r.json()['user']['groups'] == []
+
+    r = requests.get('/'.join((URL, 'users', str(user1_id))), json=user1)
+    assert r.status_code == 200
+    assert r.json()['user']['groups'] == [group1_id]
+
+    r = requests.delete('/'.join((URL, 'users', str(user0_id))))
+    assert r.status_code == 200
+
+    r = requests.get('/'.join((URL, 'groups', str(group0_id))))
+    assert r.status_code == 404
+
+    r = requests.get('/'.join((URL, 'groups', str(group1_id))))
+    assert r.status_code == 200
+    assert r.json()['group']['users'] == [user1_id]
+
+    r = requests.delete('/'.join((URL, 'users', str(user1_id))))
+    assert r.status_code == 200
+
+    r = requests.delete('/'.join((URL, 'groups', str(group1_id))))
+    assert r.status_code == 200
