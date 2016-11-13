@@ -6,7 +6,10 @@ and groups.
 
 ## Dependencies
 
-Check out `requirements.txt` to find the current list of dependencies.
+Check out `requirements.txt` to find the current list of dependencies.  These
+dependencies can be install with `pip`, if you don't have them already.
+
+    $ pip install -r requirements.txt
 
 
 ## Quickstart
