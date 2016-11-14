@@ -86,13 +86,31 @@ with the python `requests` package.
 
 Some major software components this service uses are:
 
-* the Flask web framework for routing,
+* the Flask web framework,
 * a database for storing the user and group data (currently SQLite),
 * the Flask-SQLAlchemy ORM,
 * the Marshmallow package for deserializing, serializing, and validating data.
 
-I've tried to do quite a bit of validation of POST and PUT json data but I'm
-sure even more could be done.
+
+### Future Work
+
+Currently, the groups a user is in (`user['groups']`) and the users a group has
+(`group['users']`) are represented as a lists of integer user or group ids.
+These would be more readable as usernames and groupnames, but I suspect they
+should really be URIs.
+
+For updating users and groups, I currently use the PUT method and allow clients
+to overwrite certain fields of a user or group.  This functionality might be
+better implemented as PATCH.
+
+I do quite a bit of validation of POST and PUT JSON data, but I'm sure even
+more could be done.
+
+Finally, the code could probably use some refactoring.  The Flask view
+functions for the user and group resources are completely separate in the
+codebase, but they are similar enough that they should probably be combined.
+There is a lot of duplication there.  Also, if I were to continue work on the
+service, I should consider splitting the code into more Python modules.
 
 Please let me know if you have any questions, or if you would like anything
 added or tweaked.  Thanks!
