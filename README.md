@@ -95,7 +95,7 @@ Some major software components this service uses are:
 ### Future Work
 
 Currently, the groups a user is in (`user['groups']`) and the users a group has
-(`group['users']`) are represented as a lists of integer user or group ids.
+(`group['users']`) are represented as lists of integer user or group ids.
 These would be more readable as usernames and groupnames, but I suspect they
 should really be URIs.
 
