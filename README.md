@@ -1,7 +1,7 @@
 # Grouper
 
 Grouper is a Flask-based web service with a JSON/REST API that manages users
-and groups.
+and groups (built for my education, not for production).
 
 
 ## Dependencies
